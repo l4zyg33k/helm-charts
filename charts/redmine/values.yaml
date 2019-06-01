@@ -5,6 +5,7 @@
 replicaCount: 1
 
 image:
+  registry: docker.io
   repository: redmine
   tag: passenger
   pullPolicy: IfNotPresent
@@ -14,7 +15,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
 
 ingress:

@@ -24,20 +24,23 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-        env:
-          - name: REDMINE_DB_MYSQL
-            value: "mysql-prd.default.svc.cluster.local"
-          - name: REDMINE_DB_PORT
-            value: 3306
-          - name: REDMINE_DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mysql-pass
-                key: mysql-root-password
-          - name: REDMINE_DB_DATABASE
-            value: "redmine"
-           - name: REDMINE_PLUGINS_MIGRATE
-            value: "true"
+          env:
+            - name: REDMINE_DB_MYSQL
+              value: "mysql-prd.default.svc.cluster.local"
+            - name: REDMINE_DB_PORT
+              value: "3306"
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-prd
+                  key: mysql-root-password
+            - name: REDMINE_DB_DATABASE
+              value: "redmine"
+            - name: REDMINE_PLUGINS_MIGRATE
+              value: "true"
+          volumeMounts:
+          - name: redmine-data
+            mountPath: /usr/local/redmine      
           ports:
             - name: http
               containerPort: 3000
@@ -64,3 +67,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      volumes:
+      - name: redmine-data
+        persistentVolumeClaim:
+          claimName: redmine-prd       
